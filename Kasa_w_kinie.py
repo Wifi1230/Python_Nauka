@@ -14,16 +14,32 @@ cart = {}
 total = 0
 
 # Wyświetlenie menu
-print("-------MENU-------")
-for item, data in menu.items():
-    print(f"{item:10}: ${data['price']:.2f} , {data['stock']} in stock")
-print("------------------")
+def menuprint():
+    print("-------MENU-------")
+    for item, data in menu.items():
+        print(f"{item:10}: ${data['price']:.2f} , {data['stock']} in stock")
+    print("------------------")
+
+def cartprint():
+    print("-----YOUR CART-----")
+    for food, quantity in cart.items():
+        price = menu[food]["price"]
+        subtotal = price * quantity
+        print(f"{quantity:3} x {food:12}: ${subtotal:.2f}")   
+
+menuprint()
 
 # Pętla do składania zamówienia
 while True:
-    food = input("Select item (q to quit): ").lower() #dodać funkcje cart i opcje wyswietlenia koszyka gdy sie wpisze cart oraz funkcja change aby zmienic czegos ilosc w trakcie skladania zamowienia
+    food = input("Select item (or type q to quit, c to see the cart, m to see menu): ").lower()
     if food == "q":
         break
+    elif food=="c":
+        cartprint()
+        continue
+    elif food=="m":
+        menuprint()
+        continue
     if food not in menu:
         print("Item not found.")
         continue
@@ -33,45 +49,29 @@ while True:
     stock = item["stock"]
 
     try:
-        quantity = int(input("How many? "))
-        if quantity <= 0:
-            print("Quantity must be at least 1.")
+        quantity = int(input("How many?(type negative value if you want less than you have in cart or type 0 if you want to delete that position from order) "))
+        if quantity == 0:
+            cart.pop(food, None)
+            print(f"{food} has been removed from your cart.")
             continue
-        if quantity > stock:
-            print(f"Sorry, we have only {stock} in stock.")
-            continue
+        current_quantity = cart.get(food, 0)
+        new_quantity = current_quantity + quantity
+        if cart.get(food)!=None:
+            if quantity+int(cart[food]) > stock:
+                print(f"Sorry, we have only {stock} in stock.")
+                continue
+            elif quantity > stock:
+                print(f"Sorry, we have only {stock} in stock.")
+                continue
+            elif abs(quantity)>int(cart[food]):
+                cart.pop(food)
+                continue
     except ValueError:
         print("Please enter a valid number.")
         continue
 
     cart[food] = cart.get(food, 0) + quantity
-    menu[food]["stock"] -= quantity
     print("Item added to cart.\n")
-
-# Podsumowanie zamówienia
-print("-----YOUR CART-----")
-for food, quantity in cart.items():
-    price = menu[food]["price"]
-    subtotal = price * quantity
-    print(f"{quantity:3} x {food:12}: ${subtotal:.2f}")
-    
-while True:
-    change=input("Do you want to change quantity or remove something? y/n ").strip().lower()
-    if change != "y":
-        break
-    change_item=input("Wich item you want to change or remove? ").strip().lower()
-    newquantity=int(input("How many of this do you want? "))
-    if newquantity==0:
-        cart.pop(change_item)
-    elif newquantity>0 and newquantity<menu[change_item]["stock"]:
-        cart[change_item]=newquantity
-        print("---YOUR CART NOW---")
-        for food, quantity in cart.items():
-            price = menu[food]["price"]
-            subtotal = price * quantity
-            print(f"{quantity:3} x {food:12}: ${subtotal:.2f}")
-        else:
-            print("This quantity is not available")
 
 print("-----YOUR ORDER-----")
 for food, quantity in cart.items():
