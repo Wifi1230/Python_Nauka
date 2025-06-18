@@ -21,7 +21,7 @@ print("------------------")
 
 # Pętla do składania zamówienia
 while True:
-    food = input("Select item (q to quit): ").lower()
+    food = input("Select item (q to quit): ").lower() #dodać funkcje cart i opcje wyswietlenia koszyka gdy sie wpisze cart oraz funkcja change aby zmienic czegos ilosc w trakcie skladania zamowienia
     if food == "q":
         break
     if food not in menu:
@@ -49,6 +49,30 @@ while True:
     print("Item added to cart.\n")
 
 # Podsumowanie zamówienia
+print("-----YOUR CART-----")
+for food, quantity in cart.items():
+    price = menu[food]["price"]
+    subtotal = price * quantity
+    print(f"{quantity:3} x {food:12}: ${subtotal:.2f}")
+    
+while True:
+    change=input("Do you want to change quantity or remove something? y/n ").strip().lower()
+    if change != "y":
+        break
+    change_item=input("Wich item you want to change or remove? ").strip().lower()
+    newquantity=int(input("How many of this do you want? "))
+    if newquantity==0:
+        cart.pop(change_item)
+    elif newquantity>0 and newquantity<menu[change_item]["stock"]:
+        cart[change_item]=newquantity
+        print("---YOUR CART NOW---")
+        for food, quantity in cart.items():
+            price = menu[food]["price"]
+            subtotal = price * quantity
+            print(f"{quantity:3} x {food:12}: ${subtotal:.2f}")
+        else:
+            print("This quantity is not available")
+
 print("-----YOUR ORDER-----")
 for food, quantity in cart.items():
     price = menu[food]["price"]
