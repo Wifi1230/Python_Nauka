@@ -54,18 +54,16 @@ while True:
             cart.pop(food, None)
             print(f"{food} has been removed from your cart.")
             continue
-        current_quantity = cart.get(food, 0)
-        new_quantity = current_quantity + quantity
         if cart.get(food)!=None:
             if quantity+int(cart[food]) > stock:
                 print(f"Sorry, we have only {stock} in stock.")
                 continue
-            elif quantity > stock:
-                print(f"Sorry, we have only {stock} in stock.")
-                continue
-            elif abs(quantity)>int(cart[food]):
+            elif abs(quantity)>int(cart[food]) and quantity<0:
                 cart.pop(food)
                 continue
+        elif quantity > stock:
+            print(f"Sorry, we have only {stock} in stock.")
+            continue
     except ValueError:
         print("Please enter a valid number.")
         continue
