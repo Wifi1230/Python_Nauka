@@ -32,18 +32,37 @@ dice_art = {
         "│  ●   ●  │",
         "└─────────┘")
 }
-dice=[]
-total=0
-num_of_dice=int(input("How many dice?: "))
+num_of_dice=3
 
-for die in range(num_of_dice):
-    dice.append(random.randint(1,6))
+wallet=float(input("How much do you want to deposit: "))
 
-for line in range(5):
-    for die in dice:
-        print(dice_art.get(die)[line] ,end="")
+while True:
+    dice=[]
+    right=0
+    bet_size=(input("How much do you want to bet or type q to exit: "))
+    if bet_size=="q":
+        break
+    else:
+        bet_size=float(bet_size)
+        wallet-=bet_size
+    pick=int(input("On wich number do you want to bet: "))
+
+    for die in range(num_of_dice):
+        dice.append(random.randint(1,6))
     print()
+    for line in range(5):
+        for die in dice:
+            print(dice_art.get(die)[line] ,end="")
+        print()
 
-for die in dice:
-    total+=die
-print(f"total: {total}")
+    for die in dice:
+        if die == pick:
+            right+=1
+    if right>0:
+        right+=1
+    profit=bet_size*right
+    wallet+=profit
+    print(f"You won {profit}$")
+    print(f"Your new ballance is {wallet}$")
+
+print(f"Your final ballance is {wallet}$")
