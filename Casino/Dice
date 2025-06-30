@@ -62,7 +62,10 @@ while True:
         right+=1
     profit=bet_size*right
     wallet+=profit
-    print(f"You won {profit}$")
+    if profit>0:
+        print(f"You won {profit}$")
+    else:
+        print(f"You lose {bet_size}$")
     print(f"Your new ballance is {wallet}$")
 
 print(f"Your final ballance is {wallet}$")
