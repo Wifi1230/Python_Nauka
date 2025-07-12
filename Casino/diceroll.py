@@ -33,19 +33,24 @@ dice_art = {
         "└─────────┘")
 }
 num_of_dice=3
+bettings={}
 
 def betting(wallet):
     while True:
-        bet_size=(input("How much do you want to bet or type q to exit: "))
-        if bet_size=="q":
-            return wallet,None
+        bet_size=(input("How much do you want to bet: "))
         if bet_size.isdigit()==False:
             print("You need to pick a numeric value")
             continue
         if float(bet_size)>wallet:
             print(f"You can't bet {bet_size}$, you only have {wallet:.2f}$")
             continue
+        
         bet_size=float(bet_size)
+        choice=pick()
+        if choice in bettings:
+            bettings[choice] += bet_size
+        else:
+            bettings[choice] = bet_size
         wallet-=bet_size
         return wallet,bet_size
 
@@ -71,27 +76,37 @@ def roll(dice):
 def dice_roll(wallet):
     while True:
         dice=[]
-        right=0
-
-        wallet,bet_size=betting(wallet)
-        if bet_size is None:
-            print("Thanks for playing dice!")
+        total_payout=0
+        final_betting_size=0
+        play=input("Do you want to bet in this dice throw?(y/n or q to quit dice)")
+        if play.lower()=="q":
             break
+        if play.lower()!="yes" and play.lower()!="y":
+            roll(dice)
+            continue
+        while True:
+            wallet,bet_size=betting(wallet)
+            more=input("Do you want to bet on one more option?(y/n):")
+            if more.lower()!="yes" and more.lower()!="y":
+                break
 
-        pick_int=pick()
+
+        # pick_int=pick()
 
         roll(dice)
-
-        for die in dice:
-            if die == pick_int:
-                right+=1
-        if right>0:
-            right+=1
-        profit=bet_size*right*0.9
-        wallet+=profit
-        if profit>0:
-            print(f"You won {profit:.2f}$")
+        for pick_int,bet_size in bettings.items():
+            final_betting_size+=bet_size
+            right=0
+            for die in dice:
+                if die == pick_int:
+                    right+=1
+            if right>0:
+                total_payout+=bet_size*right*0.9+bet_size
+        wallet+=total_payout
+        if total_payout-final_betting_size>0:
+            print(f"You won {total_payout-final_betting_size:.2f}$")
         else:
-            print(f"You lose {bet_size}$")
+            print(f"You lose {final_betting_size-total_payout}$")
         print(f"Your new ballance is {wallet:.2f}$")
+        bettings.clear()
     return wallet
